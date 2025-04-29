@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Project Tracker</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="web.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-chart-line fa-2x"></i>
+                    <h1>Indian Project Tracker</h1>
+                </div>
+                <div class="excel-actions">
+                    <button class="btn-excel-import" id="import-excel">
+                        <i class="fas fa-file-import"></i>
+                        Import Excel
+                    </button>
+                    <button class="btn-excel-export" id="export-excel">
+                        <i class="fas fa-file-export"></i>
+                        Export to Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <section class="filters">
+                <h3 class="filters-title"><i class="fas fa-filter"></i> Filter Projects</h3>
+                <div class="filter-row">
+                    <div class="filter-item">
+                        <label for="project-name"><i class="fas fa-project-diagram"></i> Project Name</label>
+                        <input type="text" id="project-name" placeholder="Search by name...">
+                    </div>
+                    <div class="filter-item">
+                        <label for="project-status"><i class="fas fa-tasks"></i> Status</label>
+                        <select id="project-status">
+                            <option value="">All Statuses</option>
+                            <option value="Planning">Planning</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Ongoing">Ongoing</option>
+                            <option value="Delayed">Delayed</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="company-address"><i class="fas fa-building"></i> Company Address</label>
+                        <input type="text" id="company-address" placeholder="Search by address...">
+                    </div>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-item">
+                        <label for="date-from"><i class="far fa-calendar-alt"></i> Date From</label>
+                        <input type="date" id="date-from">
+                    </div>
+                    <div class="filter-item">
+                        <label for="date-to"><i class="far fa-calendar-alt"></i> Date To</label>
+                        <input type="date" id="date-to">
+                    </div>
+                    <div class="filter-item">
+                        <label for="budget-min"><i class="fas fa-rupee-sign"></i> Budget Min (₹ Cr)</label>
+                        <input type="number" id="budget-min" placeholder="Minimum budget...">
+                    </div>
+                    <div class="filter-item">
+                        <label for="budget-max"><i class="fas fa-rupee-sign"></i> Budget Max (₹ Cr)</label>
+                        <input type="number" id="budget-max" placeholder="Maximum budget...">
+                    </div>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-item">
+                        <label for="site-location"><i class="fas fa-map-marker-alt"></i> Site Location</label>
+                        <select id="site-location">
+                            <option value="">All States</option>
+                            <option value="Andhra Pradesh">Andhra Pradesh</option>
+                            <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                            <option value="Assam">Assam</option>
+                            <option value="Bihar">Bihar</option>
+                            <option value="Chhattisgarh">Chhattisgarh</option>
+                            <option value="Goa">Goa</option>
+                            <option value="Gujarat">Gujarat</option>
+                            <option value="Haryana">Haryana</option>
+                            <option value="Himachal Pradesh">Himachal Pradesh</option>
+                            <option value="Jharkhand">Jharkhand</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Kerala">Kerala</option>
+                            <option value="Madhya Pradesh">Madhya Pradesh</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Manipur">Manipur</option>
+                            <option value="Meghalaya">Meghalaya</option>
+                            <option value="Mizoram">Mizoram</option>
+                            <option value="Nagaland">Nagaland</option>
+                            <option value="Odisha">Odisha</option>
+                            <option value="Punjab">Punjab</option>
+                            <option value="Rajasthan">Rajasthan</option>
+                            <option value="Sikkim">Sikkim</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                            <option value="Telangana">Telangana</option>
+                            <option value="Tripura">Tripura</option>
+                            <option value="Uttar Pradesh">Uttar Pradesh</option>
+                            <option value="Uttarakhand">Uttarakhand</option>
+                            <option value="West Bengal">West Bengal</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn-outline" id="reset-filters">
+                            <i class="fas fa-undo"></i> Reset Filters
+                        </button>
+                        <button class="btn-primary" id="apply-filters">
+                            <i class="fas fa-search"></i> Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="projects">
+                <div class="projects-header">
+                    <div class="projects-info">
+                        <h3 class="projects-title"><i class="fas fa-clipboard-list"></i> Project List</h3>
+                        <span class="project-count">0 Projects</span>
+                    </div>
+                    <div class="sort-options">
+                        <label for="sort-by">Sort by:</label>
+                        <select id="sort-by">
+                            <option value="date-desc">Date (Newest First)</option>
+                            <option value="date-asc">Date (Oldest First)</option>
+                            <option value="budget-desc">Budget (Highest First)</option>
+                            <option value="budget-asc">Budget (Lowest First)</option>
+                            <option value="name-asc">Name (A-Z)</option>
+                            <option value="name-desc">Name (Z-A)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="project-list">
+                    <table id="projects-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="name">Project Name <i class="fas fa-sort"></i></th>
+                                <th data-sort="company">Company <i class="fas fa-sort"></i></th>
+                                <th data-sort="date">Start Date <i class="fas fa-sort"></i></th>
+                                <th data-sort="budget">Budget (₹ Cr) <i class="fas fa-sort"></i></th>
+                                <th data-sort="location">Location <i class="fas fa-sort"></i></th>
+                                <th data-sort="status">Status <i class="fas fa-sort"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Project data will be loaded here -->
+                        </tbody>
+                    </table>
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <p>No projects match your search criteria. Try adjusting your filters or import project data.</p>
+                    </div>
+                </div>
+                <div class="pagination" id="pagination">
+                    <!-- Pagination controls will be added here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Import Excel Modal -->
+    <div class="modal" id="import-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-import"></i> Import Project Data</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="file-drop-area" id="drop-area">
+                    <i class="fas fa-file-excel"></i>
+                    <div class="drop-message">Drag & Drop Excel File Here</div>
+                    <div class="drop-submessage">or click to browse files</div>
+                    <input type="file" class="file-input" id="file-input" accept=".xlsx, .xls">
+                </div>
+                <div class="selected-file" id="selected-file">
+                    <div class="selected-file-name" id="file-name"></div>
+                    <div class="selected-file-size" id="file-size"></div>
+                </div>
+                <div class="processing-message" id="processing-message">
+                    <div class="spinner"></div>
+                    <p>Processing your data, please wait...</p>
+                </div>
+                <div class="error-message" id="error-message"></div>
+                <div class="preview-table" id="preview-table">
+                    <!-- Preview data will be shown here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" id="cancel-import">Cancel</button>
+                <button class="btn-primary" id="confirm-import" disabled>Import Data</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript will be added in a separate file
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show import modal when Import Excel button is clicked
+            document.getElementById('import-excel').addEventListener('click', function() {
+                const modal = document.getElementById('import-modal');
+                modal.style.display = 'block';
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 10);
+            });
+
+            // Close modal when the x is clicked
+            document.querySelector('.close').addEventListener('click', function() {
+                const modal = document.getElementById('import-modal');
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            });
+
+            // File drop area functionality
+            const dropArea = document.getElementById('drop-area');
+            const fileInput = document.getElementById('file-input');
+
+            dropArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+
+            // Highlight drop area when item is dragged over it
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            // Handle dropped files
+            dropArea.addEventListener('drop', handleDrop, false);
+            fileInput.addEventListener('change', handleFiles, false);
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            function highlight() {
+                dropArea.classList.add('active');
+            }
+
+            function unhighlight() {
+                dropArea.classList.remove('active');
+            }
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles({target: {files}});
+            }
+
+            function handleFiles(e) {
+                const files = e.target.files;
+                if (files.length) {
+                    const file = files[0];
+                    // Display file info
+                    document.getElementById('file-name').textContent = file.name;
+                    document.getElementById('file-size').textContent = formatFileSize(file.size);
+                    document.getElementById('selected-file').style.display = 'block';
+                    
+                    // Enable import button
+                    document.getElementById('confirm-import').disabled = false;
+                    
+                    // Here you would add code to parse the Excel file
+                    // For now, just simulate the process
+                    document.getElementById('confirm-import').addEventListener('click', function() {
+                        document.getElementById('processing-message').style.display = 'block';
+                        setTimeout(() => {
+                            // Simulate data loading
+                            document.getElementById('processing-message').style.display = 'none';
+                            const modal = document.getElementById('import-modal');
+                            modal.classList.remove('show');
+                            setTimeout(() => {
+                                modal.style.display = 'none';
+                            }, 300);
+                            
+                            // Update project count
+                            document.querySelector('.project-count').textContent = '5 Projects';
+                            
+                            // Load sample data
+                            loadSampleData();
+                        }, 2000);
+                    });
+                }
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            // Sample data loader function
+            function loadSampleData() {
+                const sampleData = [
+                    {
+                        name: "Mumbai Metro Line 3",
+                        company: "Mumbai Metro Rail Corporation",
+                        date: "2022-05-15",
+                        budget: 231.36,
+                        location: "Maharashtra",
+                        status: "Ongoing"
+                    },
+                    {
+                        name: "Bharatmala Pariyojana Phase-I",
+                        company: "National Highways Authority of India",
+                        date: "2021-08-22",
+                        budget: 535.72,
+                        location: "Multiple States",
+                        status: "Ongoing"
+                    },
+                    {
+                        name: "Ahmedabad-Mumbai High Speed Rail",
+                        company: "National High Speed Rail Corporation",
+                        date: "2020-09-14",
+                        budget: 1080.00,
+                        location: "Gujarat, Maharashtra",
+                        status: "Delayed"
+                    },
+                    {
+                        name: "Delhi-Meerut Regional Rapid Transit System",
+                        company: "National Capital Region Transport Corporation",
+                        date: "2023-01-10",
+                        budget: 300.66,
+                        location: "Delhi, Uttar Pradesh",
+                        status: "Approved"
+                    },
+                    {
+                        name: "Renewable Energy Park Rajasthan",
+                        company: "Solar Energy Corporation of India",
+                        date: "2023-06-05",
+                        budget: 450.28,
+                        location: "Rajasthan",
+                        status: "Planning"
+                    }
+                ];
+                
+                const tbody = document.querySelector('#projects-table tbody');
+                tbody.innerHTML = ''; // Clear any existing rows
+                
+                sampleData.forEach(project => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${project.name}</td>
+                        <td>${project.company}</td>
+                        <td>${formatDate(project.date)}</td>
+                        <td class="budget-value">₹ ${project.budget.toFixed(2)}</td>
+                        <td>${project.location}</td>
+                        <td><span class="status-badge status-${project.status.toLowerCase()}">${project.status}</span></td>
+                    `;
+                    row.classList.add('highlight-row');
+                    tbody.appendChild(row);
+                });
+                
+                document.querySelector('.no-results').style.display = 'none';
+                document.querySelector('.project-list table').style.display = 'table';
+                
+                // Add pagination
+                const pagination = document.getElementById('pagination');
+                pagination.innerHTML = `
+                    <button class="disabled">&laquo;</button>
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>&raquo;</button>
+                `;
+            }
+            
+            function formatDate(dateString) {
+                const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                return new Date(dateString).toLocaleDateString('en-IN', options);
+            }
+            
+            // Filter actions
+            document.getElementById('reset-filters').addEventListener('click', function() {
+                // Reset all filter inputs
+                document.getElementById('project-name').value = '';
+                document.getElementById('project-status').selectedIndex = 0;
+                document.getElementById('company-address').value = '';
+                document.getElementById('date-from').value = '';
+                document.getElementById('date-to').value = '';
+                document.getElementById('budget-min').value = '';
+                document.getElementById('budget-max').value = '';
+                document.getElementById('site-location').selectedIndex = 0;
+            });
+        });
+    </script>
+</body>
+</html>
