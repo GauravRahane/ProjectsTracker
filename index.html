@@ -1,408 +1,761 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indian Project Tracker</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="web.css">
-</head>
-<body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-chart-line fa-2x"></i>
-                    <h1>Indian Project Tracker</h1>
-                </div>
-                <div class="excel-actions">
-                    <button class="btn-excel-import" id="import-excel">
-                        <i class="fas fa-file-import"></i>
-                        Import Excel
-                    </button>
-                    <button class="btn-excel-export" id="export-excel">
-                        <i class="fas fa-file-export"></i>
-                        Export to Excel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
+// Excel Import and Processing Functions
+document.addEventListener('DOMContentLoaded', function() {
+    // Show import modal when Import Excel button is clicked
+    document.getElementById('import-excel').addEventListener('click', function() {
+        const modal = document.getElementById('import-modal');
+        modal.style.display = 'block';
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 10);
+    });
 
-    <main class="main-content">
-        <div class="container">
-            <section class="filters">
-                <h3 class="filters-title"><i class="fas fa-filter"></i> Filter Projects</h3>
-                <div class="filter-row">
-                    <div class="filter-item">
-                        <label for="project-name"><i class="fas fa-project-diagram"></i> Project Name</label>
-                        <input type="text" id="project-name" placeholder="Search by name...">
-                    </div>
-                    <div class="filter-item">
-                        <label for="project-status"><i class="fas fa-tasks"></i> Status</label>
-                        <select id="project-status">
-                            <option value="">All Statuses</option>
-                            <option value="Planning">Planning</option>
-                            <option value="Approved">Approved</option>
-                            <option value="Ongoing">Ongoing</option>
-                            <option value="Delayed">Delayed</option>
-                        </select>
-                    </div>
-                    <div class="filter-item">
-                        <label for="company-address"><i class="fas fa-building"></i> Company Address</label>
-                        <input type="text" id="company-address" placeholder="Search by address...">
-                    </div>
-                </div>
-                <div class="filter-row">
-                    <div class="filter-item">
-                        <label for="date-from"><i class="far fa-calendar-alt"></i> Date From</label>
-                        <input type="date" id="date-from">
-                    </div>
-                    <div class="filter-item">
-                        <label for="date-to"><i class="far fa-calendar-alt"></i> Date To</label>
-                        <input type="date" id="date-to">
-                    </div>
-                    <div class="filter-item">
-                        <label for="budget-min"><i class="fas fa-rupee-sign"></i> Budget Min (₹ Cr)</label>
-                        <input type="number" id="budget-min" placeholder="Minimum budget...">
-                    </div>
-                    <div class="filter-item">
-                        <label for="budget-max"><i class="fas fa-rupee-sign"></i> Budget Max (₹ Cr)</label>
-                        <input type="number" id="budget-max" placeholder="Maximum budget...">
-                    </div>
-                </div>
-                <div class="filter-row">
-                    <div class="filter-item">
-                        <label for="site-location"><i class="fas fa-map-marker-alt"></i> Site Location</label>
-                        <select id="site-location">
-                            <option value="">All States</option>
-                            <option value="Andhra Pradesh">Andhra Pradesh</option>
-                            <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-                            <option value="Assam">Assam</option>
-                            <option value="Bihar">Bihar</option>
-                            <option value="Chhattisgarh">Chhattisgarh</option>
-                            <option value="Goa">Goa</option>
-                            <option value="Gujarat">Gujarat</option>
-                            <option value="Haryana">Haryana</option>
-                            <option value="Himachal Pradesh">Himachal Pradesh</option>
-                            <option value="Jharkhand">Jharkhand</option>
-                            <option value="Karnataka">Karnataka</option>
-                            <option value="Kerala">Kerala</option>
-                            <option value="Madhya Pradesh">Madhya Pradesh</option>
-                            <option value="Maharashtra">Maharashtra</option>
-                            <option value="Manipur">Manipur</option>
-                            <option value="Meghalaya">Meghalaya</option>
-                            <option value="Mizoram">Mizoram</option>
-                            <option value="Nagaland">Nagaland</option>
-                            <option value="Odisha">Odisha</option>
-                            <option value="Punjab">Punjab</option>
-                            <option value="Rajasthan">Rajasthan</option>
-                            <option value="Sikkim">Sikkim</option>
-                            <option value="Tamil Nadu">Tamil Nadu</option>
-                            <option value="Telangana">Telangana</option>
-                            <option value="Tripura">Tripura</option>
-                            <option value="Uttar Pradesh">Uttar Pradesh</option>
-                            <option value="Uttarakhand">Uttarakhand</option>
-                            <option value="West Bengal">West Bengal</option>
-                            <option value="Delhi">Delhi</option>
-                            <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-                        </select>
-                    </div>
-                    <div class="filter-actions">
-                        <button class="btn-outline" id="reset-filters">
-                            <i class="fas fa-undo"></i> Reset Filters
-                        </button>
-                        <button class="btn-primary" id="apply-filters">
-                            <i class="fas fa-search"></i> Apply Filters
-                        </button>
-                    </div>
-                </div>
-            </section>
+    // Close modal when the x is clicked
+    document.querySelector('.close').addEventListener('click', closeModal);
+    document.getElementById('cancel-import').addEventListener('click', closeModal);
 
-            <section class="projects">
-                <div class="projects-header">
-                    <div class="projects-info">
-                        <h3 class="projects-title"><i class="fas fa-clipboard-list"></i> Project List</h3>
-                        <span class="project-count">0 Projects</span>
-                    </div>
-                    <div class="sort-options">
-                        <label for="sort-by">Sort by:</label>
-                        <select id="sort-by">
-                            <option value="date-desc">Date (Newest First)</option>
-                            <option value="date-asc">Date (Oldest First)</option>
-                            <option value="budget-desc">Budget (Highest First)</option>
-                            <option value="budget-asc">Budget (Lowest First)</option>
-                            <option value="name-asc">Name (A-Z)</option>
-                            <option value="name-desc">Name (Z-A)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="project-list">
-                    <table id="projects-table">
-                        <thead>
-                            <tr>
-                                <th data-sort="name">Project Name <i class="fas fa-sort"></i></th>
-                                <th data-sort="company">Company <i class="fas fa-sort"></i></th>
-                                <th data-sort="date">Start Date <i class="fas fa-sort"></i></th>
-                                <th data-sort="budget">Budget (₹ Cr) <i class="fas fa-sort"></i></th>
-                                <th data-sort="location">Location <i class="fas fa-sort"></i></th>
-                                <th data-sort="status">Status <i class="fas fa-sort"></i></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Project data will be loaded here -->
-                        </tbody>
-                    </table>
-                    <div class="no-results">
-                        <i class="fas fa-search"></i>
-                        <p>No projects match your search criteria. Try adjusting your filters or import project data.</p>
-                    </div>
-                </div>
-                <div class="pagination" id="pagination">
-                    <!-- Pagination controls will be added here -->
-                </div>
-            </section>
-        </div>
-    </main>
+    function closeModal() {
+        const modal = document.getElementById('import-modal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            // Reset file input and preview
+            document.getElementById('file-input').value = '';
+            document.getElementById('selected-file').style.display = 'none';
+            document.getElementById('preview-table').style.display = 'none';
+            document.getElementById('preview-table').innerHTML = '';
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('error-message').textContent = '';
+            document.getElementById('confirm-import').disabled = true;
+        }, 300);
+    }
 
-    <!-- Import Excel Modal -->
-    <div class="modal" id="import-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-file-import"></i> Import Project Data</h2>
-                <span class="close">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="file-drop-area" id="drop-area">
-                    <i class="fas fa-file-excel"></i>
-                    <div class="drop-message">Drag & Drop Excel File Here</div>
-                    <div class="drop-submessage">or click to browse files</div>
-                    <input type="file" class="file-input" id="file-input" accept=".xlsx, .xls">
-                </div>
-                <div class="selected-file" id="selected-file">
-                    <div class="selected-file-name" id="file-name"></div>
-                    <div class="selected-file-size" id="file-size"></div>
-                </div>
-                <div class="processing-message" id="processing-message">
-                    <div class="spinner"></div>
-                    <p>Processing your data, please wait...</p>
-                </div>
-                <div class="error-message" id="error-message"></div>
-                <div class="preview-table" id="preview-table">
-                    <!-- Preview data will be shown here -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-outline" id="cancel-import">Cancel</button>
-                <button class="btn-primary" id="confirm-import" disabled>Import Data</button>
-            </div>
-        </div>
-    </div>
+    // File drop area functionality
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = document.getElementById('file-input');
 
-    <script>
-        // JavaScript will be added in a separate file
-        document.addEventListener('DOMContentLoaded', function() {
-            // Show import modal when Import Excel button is clicked
-            document.getElementById('import-excel').addEventListener('click', function() {
-                const modal = document.getElementById('import-modal');
-                modal.style.display = 'block';
-                setTimeout(() => {
-                    modal.classList.add('show');
-                }, 10);
-            });
+    dropArea.addEventListener('click', () => {
+        fileInput.click();
+    });
 
-            // Close modal when the x is clicked
-            document.querySelector('.close').addEventListener('click', function() {
-                const modal = document.getElementById('import-modal');
-                modal.classList.remove('show');
-                setTimeout(() => {
-                    modal.style.display = 'none';
-                }, 300);
-            });
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
 
-            // File drop area functionality
-            const dropArea = document.getElementById('drop-area');
-            const fileInput = document.getElementById('file-input');
+    // Highlight drop area when item is dragged over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+    });
 
-            dropArea.addEventListener('click', () => {
-                fileInput.click();
-            });
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+    });
 
-            // Prevent default drag behaviors
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, preventDefaults, false);
-                document.body.addEventListener(eventName, preventDefaults, false);
-            });
+    // Handle dropped files
+    dropArea.addEventListener('drop', handleDrop, false);
+    fileInput.addEventListener('change', handleFiles, false);
 
-            // Highlight drop area when item is dragged over it
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dropArea.addEventListener(eventName, highlight, false);
-            });
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
 
-            ['dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, unhighlight, false);
-            });
+    function highlight() {
+        dropArea.classList.add('active');
+    }
 
-            // Handle dropped files
-            dropArea.addEventListener('drop', handleDrop, false);
-            fileInput.addEventListener('change', handleFiles, false);
+    function unhighlight() {
+        dropArea.classList.remove('active');
+    }
 
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles({target: {files}});
+    }
+
+    function handleFiles(e) {
+        const files = e.target.files;
+        if (files.length) {
+            const file = files[0];
+            
+            // Check if file is Excel
+            if (!file.name.match(/\.(xlsx|xls)$/)) {
+                showError("Please select a valid Excel file (.xlsx or .xls)");
+                return;
             }
+            
+            // Display file info
+            document.getElementById('file-name').textContent = file.name;
+            document.getElementById('file-size').textContent = formatFileSize(file.size);
+            document.getElementById('selected-file').style.display = 'block';
+            
+            // Start processing the Excel file
+            processExcelFile(file);
+        }
+    }
 
-            function highlight() {
-                dropArea.classList.add('active');
+    function showError(message) {
+        const errorElement = document.getElementById('error-message');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+        document.getElementById('confirm-import').disabled = true;
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Process the Excel file using SheetJS
+    function processExcelFile(file) {
+        document.getElementById('processing-message').style.display = 'block';
+        document.getElementById('preview-table').style.display = 'none';
+        document.getElementById('error-message').style.display = 'none';
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                
+                // Get first sheet
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Convert to JSON
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1, raw: false});
+                
+                // Validate data structure
+                if (!validateExcelStructure(jsonData)) {
+                    showError("Invalid Excel structure. Please use the template format.");
+                    document.getElementById('processing-message').style.display = 'none';
+                    return;
+                }
+                
+                // Generate preview
+                generatePreview(jsonData);
+                document.getElementById('processing-message').style.display = 'none';
+                
+                // Store data for import
+                window.excelData = jsonData;
+                
+                // Enable import button
+                document.getElementById('confirm-import').disabled = false;
+            } catch (error) {
+                console.error("Error processing Excel file:", error);
+                showError("Failed to process Excel file. Please check the file format.");
+                document.getElementById('processing-message').style.display = 'none';
             }
+        };
+        
+        reader.onerror = function() {
+            showError("Error reading file. Please try again.");
+            document.getElementById('processing-message').style.display = 'none';
+        };
+        
+        reader.readAsArrayBuffer(file);
+    }
 
-            function unhighlight() {
-                dropArea.classList.remove('active');
+    // Validate Excel structure
+    function validateExcelStructure(data) {
+        if (!data || data.length < 2) {
+            return false;
+        }
+        
+        // Expected headers (case insensitive)
+        const expectedHeaders = [
+            'project name',
+            'company',
+            'start date',
+            'budget (₹ cr)',
+            'location',
+            'status',
+            'company address',
+            'contact person',
+            'contact email',
+            'project description'
+        ];
+        
+        // Get headers from file and normalize
+        const headers = data[0].map(header => String(header).toLowerCase().trim());
+        
+        // Check required headers (first 6 are mandatory)
+        for (let i = 0; i < 6; i++) {
+            if (!headers.includes(expectedHeaders[i])) {
+                return false;
             }
+        }
+        
+        return true;
+    }
 
-            function handleDrop(e) {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                handleFiles({target: {files}});
+    // Generate preview table
+    function generatePreview(data) {
+        const previewTable = document.getElementById('preview-table');
+        const headers = data[0];
+        const previewData = data.slice(1, Math.min(6, data.length)); // Show up to 5 rows
+        
+        let tableHTML = '<table><thead><tr>';
+        
+        // Add headers
+        headers.forEach(header => {
+            tableHTML += `<th>${header}</th>`;
+        });
+        
+        tableHTML += '</tr></thead><tbody>';
+        
+        // Add data rows
+        previewData.forEach(row => {
+            tableHTML += '<tr>';
+            for (let i = 0; i < headers.length; i++) {
+                tableHTML += `<td>${row[i] || ''}</td>`;
             }
+            tableHTML += '</tr>';
+        });
+        
+        tableHTML += '</tbody></table>';
+        
+        previewTable.innerHTML = tableHTML;
+        previewTable.style.display = 'block';
+    }
 
-            function handleFiles(e) {
-                const files = e.target.files;
-                if (files.length) {
-                    const file = files[0];
-                    // Display file info
-                    document.getElementById('file-name').textContent = file.name;
-                    document.getElementById('file-size').textContent = formatFileSize(file.size);
-                    document.getElementById('selected-file').style.display = 'block';
-                    
-                    // Enable import button
-                    document.getElementById('confirm-import').disabled = false;
-                    
-                    // Here you would add code to parse the Excel file
-                    // For now, just simulate the process
-                    document.getElementById('confirm-import').addEventListener('click', function() {
-                        document.getElementById('processing-message').style.display = 'block';
-                        setTimeout(() => {
-                            // Simulate data loading
-                            document.getElementById('processing-message').style.display = 'none';
-                            const modal = document.getElementById('import-modal');
-                            modal.classList.remove('show');
-                            setTimeout(() => {
-                                modal.style.display = 'none';
-                            }, 300);
-                            
-                            // Update project count
-                            document.querySelector('.project-count').textContent = '5 Projects';
-                            
-                            // Load sample data
-                            loadSampleData();
-                        }, 2000);
-                    });
+    // Handle import confirmation
+    document.getElementById('confirm-import').addEventListener('click', function() {
+        if (!window.excelData) {
+            return;
+        }
+        
+        document.getElementById('processing-message').style.display = 'block';
+        
+        setTimeout(() => {
+            const data = transformExcelData(window.excelData);
+            updateProjectTable(data);
+            
+            // Close modal
+            document.getElementById('processing-message').style.display = 'none';
+            closeModal();
+            
+            // Show success message
+            showSuccessNotification(`Successfully imported ${data.length} projects`);
+        }, 1000);
+    });
+
+    // Transform Excel data to project data format
+    function transformExcelData(excelData) {
+        const headers = excelData[0].map(h => h.toLowerCase().trim());
+        const projectData = [];
+        
+        // Process each row (skip header)
+        for (let i = 1; i < excelData.length; i++) {
+            const row = excelData[i];
+            if (row.length === 0 || !row[0]) continue; // Skip empty rows
+            
+            const project = {};
+            
+            // Map standard fields
+            const fieldMap = {
+                'project name': 'name',
+                'company': 'company',
+                'start date': 'date',
+                'budget (₹ cr)': 'budget',
+                'location': 'location',
+                'status': 'status',
+                'company address': 'address',
+                'contact person': 'contact',
+                'contact email': 'email',
+                'project description': 'description'
+            };
+            
+            // Populate project object
+            for (let j = 0; j < headers.length; j++) {
+                const header = headers[j];
+                const mappedField = fieldMap[header];
+                
+                if (mappedField) {
+                    if (mappedField === 'budget') {
+                        // Convert budget to number
+                        project[mappedField] = parseFloat(row[j]) || 0;
+                    } else if (mappedField === 'date') {
+                        // Ensure date is in proper format
+                        try {
+                            const dateValue = row[j];
+                            if (dateValue) {
+                                // Try to parse Excel date number or string
+                                if (typeof dateValue === 'number') {
+                                    const excelDate = new Date(Math.round((dateValue - 25569) * 86400 * 1000));
+                                    project[mappedField] = excelDate.toISOString().split('T')[0];
+                                } else {
+                                    const dateParts = dateValue.split(/[-\/]/);
+                                    if (dateParts.length === 3) {
+                                        // Handle different date formats
+                                        let year, month, day;
+                                        
+                                        if (dateParts[0].length === 4) {
+                                            // YYYY-MM-DD
+                                            [year, month, day] = dateParts;
+                                        } else {
+                                            // DD-MM-YYYY or MM-DD-YYYY
+                                            // Assume DD-MM-YYYY for Indian format
+                                            [day, month, year] = dateParts;
+                                        }
+                                        
+                                        const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                                        project[mappedField] = formattedDate;
+                                    } else {
+                                        project[mappedField] = dateValue;
+                                    }
+                                }
+                            } else {
+                                project[mappedField] = new Date().toISOString().split('T')[0];
+                            }
+                        } catch (e) {
+                            console.error("Date parsing error:", e);
+                            project[mappedField] = new Date().toISOString().split('T')[0];
+                        }
+                    } else {
+                        project[mappedField] = row[j] || '';
+                    }
                 }
             }
-
-            function formatFileSize(bytes) {
-                if (bytes === 0) return '0 Bytes';
-                const k = 1024;
-                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-                const i = Math.floor(Math.log(bytes) / Math.log(k));
-                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            
+            // Only add if required fields are present
+            if (project.name && project.company) {
+                projectData.push(project);
             }
+        }
+        
+        return projectData;
+    }
 
-            // Sample data loader function
-            function loadSampleData() {
-                const sampleData = [
-                    {
-                        name: "Mumbai Metro Line 3",
-                        company: "Mumbai Metro Rail Corporation",
-                        date: "2022-05-15",
-                        budget: 231.36,
-                        location: "Maharashtra",
-                        status: "Ongoing"
-                    },
-                    {
-                        name: "Bharatmala Pariyojana Phase-I",
-                        company: "National Highways Authority of India",
-                        date: "2021-08-22",
-                        budget: 535.72,
-                        location: "Multiple States",
-                        status: "Ongoing"
-                    },
-                    {
-                        name: "Ahmedabad-Mumbai High Speed Rail",
-                        company: "National High Speed Rail Corporation",
-                        date: "2020-09-14",
-                        budget: 1080.00,
-                        location: "Gujarat, Maharashtra",
-                        status: "Delayed"
-                    },
-                    {
-                        name: "Delhi-Meerut Regional Rapid Transit System",
-                        company: "National Capital Region Transport Corporation",
-                        date: "2023-01-10",
-                        budget: 300.66,
-                        location: "Delhi, Uttar Pradesh",
-                        status: "Approved"
-                    },
-                    {
-                        name: "Renewable Energy Park Rajasthan",
-                        company: "Solar Energy Corporation of India",
-                        date: "2023-06-05",
-                        budget: 450.28,
-                        location: "Rajasthan",
-                        status: "Planning"
-                    }
-                ];
+    // Update project table with imported data
+    function updateProjectTable(projectData) {
+        const tbody = document.querySelector('#projects-table tbody');
+        tbody.innerHTML = ''; // Clear any existing rows
+        
+        if (projectData.length === 0) {
+            document.querySelector('.no-results').style.display = 'block';
+            document.querySelector('.project-list table').style.display = 'none';
+            document.querySelector('.project-count').textContent = '0 Projects';
+            return;
+        }
+        
+        projectData.forEach(project => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${project.name}</td>
+                <td>${project.company}</td>
+                <td>${formatDate(project.date)}</td>
+                <td class="budget-value">₹ ${project.budget.toFixed(2)}</td>
+                <td>${project.location}</td>
+                <td><span class="status-badge status-${project.status.toLowerCase()}">${project.status}</span></td>
+            `;
+            row.classList.add('highlight-row');
+            tbody.appendChild(row);
+        });
+        
+        document.querySelector('.no-results').style.display = 'none';
+        document.querySelector('.project-list table').style.display = 'table';
+        document.querySelector('.project-count').textContent = `${projectData.length} Projects`;
+        
+        // Add pagination
+        updatePagination(projectData.length);
+        
+        // Save to local storage for persistence
+        localStorage.setItem('projectData', JSON.stringify(projectData));
+    }
+    
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        try {
+            return new Date(dateString).toLocaleDateString('en-IN', options);
+        } catch (e) {
+            return dateString;
+        }
+    }
+    
+    function updatePagination(totalProjects) {
+        const pagination = document.getElementById('pagination');
+        const itemsPerPage = 10;
+        const totalPages = Math.ceil(totalProjects / itemsPerPage);
+        
+        let paginationHTML = '';
+        
+        if (totalPages <= 1) {
+            pagination.innerHTML = '';
+            return;
+        }
+        
+        paginationHTML += `<button class="disabled">&laquo;</button>`;
+        
+        for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+            if (i === 1) {
+                paginationHTML += `<button class="active">${i}</button>`;
+            } else {
+                paginationHTML += `<button>${i}</button>`;
+            }
+        }
+        
+        paginationHTML += `<button>&raquo;</button>`;
+        pagination.innerHTML = paginationHTML;
+    }
+    
+    function showSuccessNotification(message) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = 'notification success';
+        notification.innerHTML = `
+            <i class="fas fa-check-circle"></i> 
+            <span>${message}</span>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Show notification
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        // Hide and remove after 3 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 3000);
+    }
+    
+    // Export to Excel functionality
+    document.getElementById('export-excel').addEventListener('click', function() {
+        // Get project data from local storage or current table
+        let projectData = [];
+        try {
+            projectData = JSON.parse(localStorage.getItem('projectData')) || [];
+        } catch (e) {
+            // If local storage fails, try to extract from table
+            const rows = document.querySelectorAll('#projects-table tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const status = cells[5].textContent.trim();
+                const budget = parseFloat(cells[3].textContent.replace('₹', '').trim());
                 
-                const tbody = document.querySelector('#projects-table tbody');
-                tbody.innerHTML = ''; // Clear any existing rows
+                projectData.push({
+                    name: cells[0].textContent,
+                    company: cells[1].textContent,
+                    date: cells[2].textContent,
+                    budget: budget,
+                    location: cells[4].textContent,
+                    status: status
+                });
+            });
+        }
+        
+        if (projectData.length === 0) {
+            alert('No data to export. Please import or add projects first.');
+            return;
+        }
+        
+        // Create Excel workbook
+        const wb = XLSX.utils.book_new();
+        
+        // Define headers
+        const headers = [
+            'Project Name', 
+            'Company', 
+            'Start Date', 
+            'Budget (₹ Cr)', 
+            'Location', 
+            'Status', 
+            'Company Address',
+            'Contact Person',
+            'Contact Email',
+            'Project Description'
+        ];
+        
+        // Create data array with headers
+        const excelData = [headers];
+        
+        // Add data rows
+        projectData.forEach(project => {
+            excelData.push([
+                project.name || '',
+                project.company || '',
+                project.date || '',
+                project.budget || 0,
+                project.location || '',
+                project.status || '',
+                project.address || '',
+                project.contact || '',
+                project.email || '',
+                project.description || ''
+            ]);
+        });
+        
+        // Create worksheet and add to workbook
+        const ws = XLSX.utils.aoa_to_sheet(excelData);
+        XLSX.utils.book_append_sheet(wb, ws, 'Projects');
+        
+        // Generate Excel file and trigger download
+        XLSX.writeFile(wb, 'Indian_Projects_' + new Date().toISOString().split('T')[0] + '.xlsx');
+        
+        showSuccessNotification('Projects exported successfully');
+    });
+    
+    // Load projects from local storage on page load
+    function loadSavedProjects() {
+        try {
+            const savedData = localStorage.getItem('projectData');
+            if (savedData) {
+                const projectData = JSON.parse(savedData);
+                if (Array.isArray(projectData) && projectData.length > 0) {
+                    updateProjectTable(projectData);
+                }
+            }
+        } catch (e) {
+            console.error('Error loading saved projects:', e);
+        }
+    }
+    
+    // Initialize project filters
+    function initializeFilters() {
+        const applyFiltersBtn = document.getElementById('apply-filters');
+        const resetFiltersBtn = document.getElementById('reset-filters');
+        
+        // Apply filters
+        applyFiltersBtn.addEventListener('click', function() {
+            const filters = {
+                name: document.getElementById('project-name').value.toLowerCase(),
+                status: document.getElementById('project-status').value,
+                address: document.getElementById('company-address').value.toLowerCase(),
+                dateFrom: document.getElementById('date-from').value,
+                dateTo: document.getElementById('date-to').value,
+                budgetMin: parseFloat(document.getElementById('budget-min').value) || 0,
+                budgetMax: parseFloat(document.getElementById('budget-max').value) || Number.MAX_VALUE,
+                location: document.getElementById('site-location').value
+            };
+            
+            filterProjects(filters);
+        });
+        
+        // Reset filters
+        resetFiltersBtn.addEventListener('click', function() {
+            // Reset all filter inputs
+            document.getElementById('project-name').value = '';
+            document.getElementById('project-status').selectedIndex = 0;
+            document.getElementById('company-address').value = '';
+            document.getElementById('date-from').value = '';
+            document.getElementById('date-to').value = '';
+            document.getElementById('budget-min').value = '';
+            document.getElementById('budget-max').value = '';
+            document.getElementById('site-location').selectedIndex = 0;
+            
+            // Load all projects
+            loadSavedProjects();
+        });
+    }
+    
+    // Filter projects based on criteria
+    function filterProjects(filters) {
+        try {
+            const savedData = localStorage.getItem('projectData');
+            if (!savedData) return;
+            
+            let projectData = JSON.parse(savedData);
+            
+            // Apply filters
+            const filteredData = projectData.filter(project => {
+                // Project name filter
+                if (filters.name && !project.name.toLowerCase().includes(filters.name)) {
+                    return false;
+                }
                 
-                sampleData.forEach(project => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${project.name}</td>
-                        <td>${project.company}</td>
-                        <td>${formatDate(project.date)}</td>
-                        <td class="budget-value">₹ ${project.budget.toFixed(2)}</td>
-                        <td>${project.location}</td>
-                        <td><span class="status-badge status-${project.status.toLowerCase()}">${project.status}</span></td>
-                    `;
-                    row.classList.add('highlight-row');
-                    tbody.appendChild(row);
+                // Status filter
+                if (filters.status && project.status !== filters.status) {
+                    return false;
+                }
+                
+                // Company address filter
+                if (filters.address && 
+                    (!project.address || !project.address.toLowerCase().includes(filters.address))) {
+                    return false;
+                }
+                
+                // Date range filter
+                if (filters.dateFrom) {
+                    const projectDate = new Date(project.date);
+                    const fromDate = new Date(filters.dateFrom);
+                    if (projectDate < fromDate) return false;
+                }
+                
+                if (filters.dateTo) {
+                    const projectDate = new Date(project.date);
+                    const toDate = new Date(filters.dateTo);
+                    if (projectDate > toDate) return false;
+                }
+                
+                // Budget range filter
+                const budget = parseFloat(project.budget) || 0;
+                if (budget < filters.budgetMin) return false;
+                if (filters.budgetMax < Number.MAX_VALUE && budget > filters.budgetMax) return false;
+                
+                // Location filter
+                if (filters.location && !project.location.includes(filters.location)) {
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            updateProjectTable(filteredData);
+        } catch (e) {
+            console.error('Error filtering projects:', e);
+        }
+    }
+    
+    // Sort projects
+    function initializeSorting() {
+        const sortSelect = document.getElementById('sort-by');
+        const tableHeaders = document.querySelectorAll('#projects-table th[data-sort]');
+        
+        // Sort by dropdown
+        sortSelect.addEventListener('change', function() {
+            const sortValue = this.value;
+            sortProjects(sortValue);
+        });
+        
+        // Table header sorting
+        tableHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const sortField = this.getAttribute('data-sort');
+                const currentSortOrder = this.classList.contains('asc') ? 'desc' : 'asc';
+                
+                // Remove sort indicators from all headers
+                tableHeaders.forEach(h => {
+                    h.classList.remove('asc', 'desc');
+                    h.querySelector('i').className = 'fas fa-sort';
                 });
                 
-                document.querySelector('.no-results').style.display = 'none';
-                document.querySelector('.project-list table').style.display = 'table';
+                // Add sort indicator to current header
+                this.classList.add(currentSortOrder);
+                this.querySelector('i').className = currentSortOrder === 'asc' ? 
+                    'fas fa-sort-up' : 'fas fa-sort-down';
                 
-                // Add pagination
-                const pagination = document.getElementById('pagination');
-                pagination.innerHTML = `
-                    <button class="disabled">&laquo;</button>
-                    <button class="active">1</button>
-                    <button>2</button>
-                    <button>3</button>
-                    <button>&raquo;</button>
-                `;
-            }
-            
-            function formatDate(dateString) {
-                const options = { year: 'numeric', month: 'short', day: 'numeric' };
-                return new Date(dateString).toLocaleDateString('en-IN', options);
-            }
-            
-            // Filter actions
-            document.getElementById('reset-filters').addEventListener('click', function() {
-                // Reset all filter inputs
-                document.getElementById('project-name').value = '';
-                document.getElementById('project-status').selectedIndex = 0;
-                document.getElementById('company-address').value = '';
-                document.getElementById('date-from').value = '';
-                document.getElementById('date-to').value = '';
-                document.getElementById('budget-min').value = '';
-                document.getElementById('budget-max').value = '';
-                document.getElementById('site-location').selectedIndex = 0;
+                // Sort projects
+                sortProjects(`${sortField}-${currentSortOrder}`);
             });
         });
-    </script>
-</body>
-</html>
+    }
+    
+    // Sort projects based on criteria
+    function sortProjects(sortValue) {
+        try {
+            const tbody = document.querySelector('#projects-table tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            if (rows.length === 0) return;
+            
+            // Define sort function based on column index
+            const getSortFunction = (index, order) => {
+                return (a, b) => {
+                    let valueA = a.cells[index].textContent.trim();
+                    let valueB = b.cells[index].textContent.trim();
+                    
+                    // Special case for budget column
+                    if (index === 3) {
+                        valueA = parseFloat(valueA.replace('₹', '').trim());
+                        valueB = parseFloat(valueB.replace('₹', '').trim());
+                    }
+                    // Special case for date column
+                    else if (index === 2) {
+                        valueA = new Date(valueA);
+                        valueB = new Date(valueB);
+                    }
+                    
+                    if (order === 'asc') {
+                        return valueA > valueB ? 1 : -1;
+                    } else {
+                        return valueA < valueB ? 1 : -1;
+                    }
+                };
+            };
+            
+            // Get sort parameters
+            let sortIndex = 0;
+            let sortOrder = 'asc';
+            
+            switch (sortValue) {
+                case 'name-asc':
+                    sortIndex = 0;
+                    sortOrder = 'asc';
+                    break;
+                case 'name-desc':
+                    sortIndex = 0;
+                    sortOrder = 'desc';
+                    break;
+                case 'company-asc':
+                    sortIndex = 1;
+                    sortOrder = 'asc';
+                    break;
+                case 'company-desc':
+                    sortIndex = 1;
+                    sortOrder = 'desc';
+                    break;
+                case 'date-asc':
+                    sortIndex = 2;
+                    sortOrder = 'asc';
+                    break;
+                case 'date-desc':
+                    sortIndex = 2;
+                    sortOrder = 'desc';
+                    break;
+                case 'budget-asc':
+                    sortIndex = 3;
+                    sortOrder = 'asc';
+                    break;
+                case 'budget-desc':
+                    sortIndex = 3;
+                    sortOrder = 'desc';
+                    break;
+                case 'location-asc':
+                    sortIndex = 4;
+                    sortOrder = 'asc';
+                    break;
+                case 'location-desc':
+                    sortIndex = 4;
+                    sortOrder = 'desc';
+                    break;
+                case 'status-asc':
+                    sortIndex = 5;
+                    sortOrder = 'asc';
+                    break;
+                case 'status-desc':
+                    sortIndex = 5;
+                    sortOrder = 'desc';
+                    break;
+                default:
+                    sortIndex = 2;
+                    sortOrder = 'desc'; // Default: date newest first
+            }
+            
+            // Sort rows
+            rows.sort(getSortFunction(sortIndex, sortOrder));
+            
+            // Reappend rows in new order
+            rows.forEach(row => tbody.appendChild(row));
+        } catch (e) {
+            console.error('Error sorting projects:', e);
+        }
+    }
+    
+    // Load projects on startup
+    loadSavedProjects();
+    
+    // Initialize filters and sorting
+    initializeFilters();
+    initializeSorting();
+});
